@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySQL/MariaDB 語法操作</title>
+</head>
+
+<body>
+    <h1>MySQL/MariaDB 語法操作</h1>
+    <a href="https://mackliu.github.io/php-book/2021/09/21/db-lesson-03/">參考資料 </a>
+
+    <ul><!-- 新增資料 INSERT INTO ---------------------------------------------------------------------------------------------------------------------------->
+        
+        <li>INSERT INTO `students` (`uni_id`,`seat_num`,`name`,`birthday`,`national_id`,`parent`,`telphone`,`major`,`secondary`)
+            VALUES ('20220111','23','王小明','1988-09-28','A1234567890','新北市泰山區明志路一段300號','王大明','0933321123','資訊科','新北市泰山國中畢業');
+        <!-- INSERT INTO `選擇的資料表名稱` (`資料表欄位1`,`資料表欄位2`,`資料表欄位3`,.....)
+             VALUES ('對應資料表欄位1的資料','對應資料表欄位2的資料','對應資料表欄位3的資料',.....) -->
+        </li>
+    </ul>
+
+
+
+
+    <ul><!-- 更新資料 UPDATE --------------------------------------------------------------------------------------------------------------------------->
+        
+        <!--更新資料`students` 設定`uni_id`='更新內容'  哪裡  `uni_id`='目前內容' -->
+        <li>UPDATE `students` SET `uni_id`='1991666'  WHERE `uni_id`='1991888';
+        <!-- 更改uni_id內容為1991666    更改位置uni_id內容為1991888 -->
+        </li>
+
+        <!--更新資料`students` 設定`uni_id`='更新內容'  哪裡  `id`='目前內容' -->
+        <li>UPDATE `students` SET `uni_id`='1991666' WHERE `id`='1';
+        <!-- 使用id定位該欄的uni_id  將其更改為1991666 -->
+        </li>
+    </ul>
+
+
+
+
+    <ul><!-- 刪除資料 DELETE FROM --------------------------------------------------------------------------------------------------------------------------->
+        
+        <!-- 刪除10號 因為10號只有一個 所以只會刪一個 -->
+        <li>DELETE FROM `students` WHERE `uni_id`='10';</li>
+
+
+        <!-- 不小心刪錯目標,這個目標有多個`major`=商業貿易科  這會導致全部符合 商業貿易科 條件的資料被刪除 -->
+        <li>DELETE FROM `students` WHERE `major`=商業貿易科</li>
+    </ul>
+
+
+
+
+    <ul><!-- 查詢資料 SELECT * FROM --------------------------------------------------------------------------------------------------------------------------->
+
+        <!-- SQL的查詢功能相當口語化 可以應用= < > or & 等方式縮小查詢範圍 -->
+
+        <!-- 查詢全部 來自`students`  哪裡  `id` 大於100和小於200           顯示101~199號 -->
+        <li>SELECT * FROM `students` WHERE `id` > 100 && `id` &gt; 200; </li>
+        <!-- 因前面的SELECT * 所以查詢出來的 101~199的資料  會顯示全部資料內容-->
+
+
+        <!-- 查詢 `id`   來自`students`   哪裡 `id` 大於10     顯示出大於10的ID,-->   
+        <li>SELECT `id` FROM `students` WHERE `id`>10;</li>
+        <!-- 因前面的SELECT `id`所以查詢出來 大於10的ID資料,只會顯示ID資料   不會顯示ID之外的資料 -->
+
+
+        <!-- 查詢 全部 來自 `students` 在哪 `birthday`值 大於等於日期'1984-01-01' -->
+        <li>SELECT * FROM `students` WHERE `birthday` >= '1984-01-01'</li>
+        <!-- 注意使用日期查詢時有 - 區隔的話 要將數字用單引號框起來 否則會變減法計算 -->
+    </ul>
+
+
+
+
+    <ul><!-- 查詢 IN 特殊指定 --------------------------------------------------------------------------------------------------------------------------->
+        
+        <!-- 用於查詢id等內容單一不重複的資料類型  多用於不連續的獨立資料 -->
+        <!-- 查詢 全部 來自 `students` 在哪 `id` 裡面的 (1,12,23,34,45,56) -->
+        <li>SELECT * FROM `students` WHERE `id` IN(1,12,23,34,45,56)</li>
+        <li>SELECT * FROM `students` WHERE `seat_num` IN('10101','10203','10511')</li>
+    </ul>
+
+
+
+
+    <ul><!-- 查詢 BETWEEN 特殊指定 --------------------------------------------------------------------------------------------------------------------------->
+        
+        <!-- 使用 > < AND < > 設定一個範圍來進行搜尋  -->
+        <!-- 注意: 數字條件上 必須  數字小放在前面 中間使用英文字AND連接範圍 數字大放在後面     因為是設定範圍所以當然不會是大到小 -->
+
+        <!-- 查詢 全部 來自 `students` 哪裡 `id` 範圍 110 到 130     顯示id為110~130的21筆資料 -->
+        <li>SELECT * FROM `students` WHERE `id` BETWEEN 110 AND 130</li>
+
+
+        <!-- 查詢 全部 來自 `students` 哪裡 `birthday` 範圍 '1983-04-01' 到 '1983-04-30' 之間-->
+        <li>SELECT * FROM `students` WHERE `birthday` BETWEEN '1983-04-01' AND '1983-04-30'</li>
+        <!-- 縮小查詢範圍 查詢日期 1983-04-01 至 1983-04-30 之間的區間     顯示該區間birthday的所有資料 -->
+    </ul>
+
+
+
+
+    <ul><!-- 查詢 OLDER BY 排序 --------------------------------------------------------------------------------------------------------------------------->
+        
+
+        <!-- OLDER BY是在SLECT完之後 做排序的動作 -->
+        <!-- 為未設定時 預設為ASC遞增排序 使用遞增排序=12345 -->
+        <!-- 設定DEC時 遞減排序=54321 -->
+
+        <!-- 查詢全部  來自`students` 哪裡`id` 範圍<=49   排序 `id` 遞增 -->
+        <li>SELECT * FROM `students` WHERE `id`<=49 ORDER BY `id` ASC</li> <!-- 設定 遞增 (ASC):1~49 -->
+        <li>SELECT * FROM `students` WHERE `id`<=49 ORDER BY `id` DESC</li> <!-- 設定 遞減(DESC):49~1 -->
+
+        <li>SELECT * FROM `students` WHERE `id`<=49 ORDER BY `major`</li> <!-- 中文也能排序 這裡排序了科別 但id順序此時未按照順序排 看起來比較雜亂-->
+        <li>SELECT * FROM `students` WHERE `id`<=49 ORDER BY `major`,`id`</li> <!-- 中文排序之外 新增id排序 此時科系排序的同時將科系按照ID順序排序-->
+        <li>SELECT * FROM `students` WHERE `id`<=49 ORDER BY `major`,`id`DESC</li> <!-- 這裡又把上例加上DESC 又使其id結果 由高到低 遞減排序 -->
+
+        <!-- 查詢全部  來自`students` 哪裡`id`範圍<=49    排序 `id` 遞增 -->
+        <li>SELECT * FROM `table` ORDER BY `birthday` DESC `area` ASC</li><!-- 應用 將生日(月+日)遞減排序 再將其中的月份遞增排序-->
+    </ul>
+
+
+
+
+    <ul><!-- 查詢 GROUP BY 群組 分類 --------------------------------------------------------------------------------------------------------------------------->
+        
+        <!-- 產生的問題 : 把資料合併 -->
+        <!-- 這裡把major相同科別的資料 合併後只顯示第一個結果    假設'商業經營科'有30人,  ID:2的資料是排在最前面的'商業經營科',  那這樣合併後'商業經營科'只會顯示位於最前面的2號 導致所有科別都只顯示一人-->
+        <li>SELECT * FROM `students` GROUP BY `major`</li>
+        <li>SELECT `major` FROM `students` GROUP BY `major`</li><!-- *應用:只查詢科別 使其只顯示科別資訊 可以直接知道該學校有哪些科系 -->
+
+
+        <!-- 製作第二層分類 在某科別之下 有多少班 目前沒有班級欄位 -->
+        <!-- 搭配 SUBSTRING (取出指定位置開始的指定長度的字串) -->
+        <!-- 函式 SUBSTRING (str,pos,len) (要取的字串,從哪開始,取得長度) -->
+        <li> 參考資料 : https://mariadb.com/kb/en/substring/ </li>
+        <!-- 查詢`科別`,字串長度(`班級座號`,第一字開始,取三字) 命名欄位'班級'  來自`students`  群組`科別`,字串長度(`班級座號`,第一字開始,取三字)-->
+        <li>SELECT `major`,SUBSTRING(`seat_num`,1,3) as '班級' FROM `students` GROUP BY `major`,SUBSTRING(`seat_num`,1,3)</li>
+        <!-- 前面的SELECT `major`是要在查詢後只顯示科別資料
+             再藉由,SUBSTRING取得`seat_num`裡 值的前三碼,此時顯示前三碼的表格欄會是   SUBSTRING(`seat_num`,1,3) <---對 又臭又長  所以需要as '班級' 將表格欄改為 班級
+             來自 `students` 雖然寫在中間 但它是呼應整段程式碼從`students`中取出資料的部分
+             GROUP BY 群組化 `major` 使其讓所有科別都個別只顯示一個 商業經營科*1,國際貿易科*1......等
+             句尾的SUBSTRING(`seat_num`,1,3) 也有吃到GROUP BY的設定 所以顯示出的前三碼(班級)也都會是唯一 101*1,102*1....等
+             最後的結果就是 讓科別與班級  都個別去取出一個唯一值作為代表   使表單上顯示  每一科 有哪些班-->
+    </ul>
+
+
+
+
+    <ul><!-- LIMIT 限制筆數 --------------------------------------------------------------------------------------------------------------------------->
+        
+        <!-- LIMIT只有一個參數時 = 取出前幾筆資料(從1開始算) -->
+        <li>SELECT * FROM `students` LIMIT 10</li><!-- 取出前10筆資料 -->
+
+        <!-- LIMIT有兩個參數時 = 從第幾筆資料開始,取出幾筆資料 -->
+        <li>SELECT * FROM `students` LIMIT 10,10</li>
+        <!-- 第一個數從0(資料1)開始數到10(資料11)從第11筆開始   第二個數為從1(資料11)~20(資料20)取出   取出第11~20筆資料(共實拿10筆資料) -->
+
+
+
+        <!-- 撈出ORDER BY排序的科別  再從其中取出前10筆資料 -->
+        <li>SELECT * FROM `students` ORDER BY `major` LIMIT 10;</li><!-- 單用ORDER BY排序的科別 使ID順序不是順數 前10筆取出的資料也都是同一科系  因為LIMIT是取前10筆  不是前10id -->
+        
+        <!-- 撈出出科別與id資料 再從其取出11~20 -->  
+        <li>SELECT * FROM `students` ORDER BY `major`,`id` LIMIT 10,20;</li>
+        <!-- LIMIT第一個數從第幾筆開始(從0開始算)   第二個數取幾筆(從1開始算) -->
+
+
+        <!-- 論壇網站用於每一分頁都顯示固定文章筆數的應用 -->
+        <li>SELECT * FROM `students` ORDER BY `major`,`id` LIMIT 0,10;</li> <!--  0~9筆文章  -->
+        <li>SELECT * FROM `students` ORDER BY `major`,`id` LIMIT 10,10;</li><!-- 10~19筆文章 -->
+        <li>SELECT * FROM `students` ORDER BY `major`,`id` LIMIT 20,10;</li><!-- 20~29筆文章 -->
+        <li>SELECT * FROM `students` ORDER BY `major`,`id` LIMIT 30,10;</li><!-- 30~39筆文章 -->
+    </ul>
+</body>
+</html>
