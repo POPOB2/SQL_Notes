@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關聯式資料庫</title>
+    <style>
+        *{
+            list-style-type: none;
+            box-sizing: border-box;
+            margin:0;
+            padding:0;
+        }
+        body{
+            padding:2rem;
+        }
+        h1{
+            text-align: center;
+            margin:1rem auto;
+        }
+        h3{
+            font-size:1.5rem;
+            margin:1.5rem;
+            padding:0.5 2rem;
+        }
+        ul{
+            margin:1rem;
+        }
+        li{
+            border: 1px solid #ccc;
+            background: #eee;
+            padding: 1rem;
+            width: 80%;
+            font-size: 1.5rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin:0.75rem 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>關聯式資料庫</h1>
+<!-- 把資料做分類 變成一個大類 這些資料表之間存在關聯  -->
+<!-- 聯表查詢-foem where -->
+
+<ul><!-- ----------------------------------------------------------INNER JOIN-內部結合查詢---------------------------------------------------------- -->
+    <!-- ------------------------------------------------------------理解關聯式資料的優點------------------------------------------------------------ -->
+    <!-- 查詢全部 來自`major`與`students`資料表  哪裡 資料表major的name 連結 資料表students的major  -->
+    <li>SELECT * FORM `major`,`students` WHERE `major`.`name`=`students`.`major`</li>
+    <!-- 將兩張表的結果結合 此時會有相同內容出現 導致重複-->
+
+
+    <!-- 更新 students 設定`major`內容改為1 更改位置 `major` 內容'商業經營科' 以此類推 -->
+    <!-- 一口氣更新多筆 內容某某科的major -->
+    <li>UPDATE `students` SET `major`=1 WHERE `major`='商業經營科'</li>
+    <li>UPDATE `students` SET `major`=2 WHERE `major`='國際貿易科'</li>
+    <li>UPDATE `students` SET `major`=3 WHERE `major`='室內佈置科'</li>
+    <li>UPDATE `students` SET `major`=4 WHERE `major`='幼兒保育科'</li>
+    <li>UPDATE `students` SET `major`=5 WHERE `major`='美容科'</li>
+    <li>UPDATE `students` SET `major`=6 WHERE `major`='資料處理科'</li>
+    
+
+    <!-- WHERE `major`.`id`=`students`.`major` (資料表major的id變成 資料表students的major) -->
+    <li>SELECT * FROM `students`,`major` WHERE `major`.`id`=`students`.`major`</li>
+
+
+    <!-- 這裡有兩組id 使用下面的方法去除一個id -->
+    <!-- 和上面差不多 差別在顯示全部的部分只留students資料表,  major只留name顯示 去除了major的id  -->
+    <li>SELECT `students`.*,`major`.`name`as '-科系-' FROM `students`,`major` WHERE `major`.`id`=`students`.`major`</li>
+
+    <!-- 回到major資料表 將國際貿易科 用編輯更改為 通用貿易科
+        再次SELECT `students`.*,`major`.`name`as '-科系-' FROM `students`,`major` WHERE `major`.`id`=`students`.`major`
+        此時原本顯示國際貿易科的內容會全部變更為通用貿易科
+        好處是 兩個相關聯的資料庫 有id在對應的位置進行定位 所以只要更改相關的資料表內容 就可以影響到另一個資料表的內容呈現 -->
+</ul>
+
+
+
+<!-- ----------------------------------------------------------INNER JOIN-內部結合查詢---------------------------------------------------------- -->
+<!-- ------------------------------------------------------------關聯式資料 理解流程------------------------------------------------------------ -->
+<ul>
+    <!-- 簡化前提: 資料表先簡化 先將國中與狀態(畢業肄業等) 分開成兩個欄位
+         縣市與國中 是否要拆開 依需求思考 考慮到不同地區有同名國中 這裡便不拆開
+         狀態是綁學生資料 不綁國中 所以先設一個資料表顯示縣市與國中
+         另一張資料表顯示狀態 -->
+
+    <li>SELECT `students`.`id`,`students`.`name`,`graduate_school`.`name` as '畢業國中' FROM `students`,`graduate_school`</li>
+    <!-- 此時會顯示更改了13412筆資料 *原因:只有FROM 沒有WHERE 在沒設條件的情況下 系統會將兩筆資料表之間的關聯組合都做過一遍 變成每一個人名對應到了所有國中與所有狀態 一個人產生了28種資料組合-->
+
+    
+    <li>SELECT `students`.`id`,`students`.`name`,`graduate_school`.`name` as '畢業國中' FROM `students`,`graduate_school` WHERE `students`.`graduate_at`=`graduate_school`.`id`</li>
+    <!-- 新增條件後 正確的顯示更改資料為479筆 -->
+    <li>SELECT `students`.`id`,<!-- 顯示students資料表的id內容 -->
+        `students`.`name`,<!-- 顯示students資料表的name內容 -->
+        `graduate_school`.`name` as '畢業國中' <!-- 顯示graduate_school資料表的name內容 as '畢業國中' -->
+         FROM `students`,`graduate_school`<!-- 資料來自students和graduate_school資料表 -->
+         WHERE `students`.`graduate_at`=`graduate_school`.`id`<!-- 查詢位置(條件) students表的graduate_school的值 變成 graduate_school表的id值 -->
+        </li>
+
+
+    <li>SELECT `students`.`id`,`students`.`name`,`graduate_school`.`name` as '畢業國中',`status`.`status` as '畢業狀態' FROM `students`,`graduate_school`,`status` WHERE `students`.`graduate_at`=`graduate_school`.`id`</li>
+    <!-- 新增了`status`資料表的內容 但再次沒有在WHERE將`status`做為條件放入   使status套入了所有條件 1個人產生了4種畢業狀態組合   479筆畢業資料*4種狀態=產生1916筆資料 -->
+    <li>SELECT `students`.`id`,<!-- 顯示students資料表的id內容 -->
+               `students`.`name`,<!-- 顯示students資料表的name內容 -->
+               `graduate_school`.`name` as '畢業國中', <!-- 顯示graduate_school資料表的name內容 as '畢業國中' -->
+               `status`.`status` as '畢業狀態' <!-- 顯示status資料表的status內容 as '畢業狀態' -->
+        FROM `students`,`graduate_school`,`status`<!-- 資料來自students/graduate_school/status資料表 -->
+        WHERE `students`.`graduate_at`=`graduate_school`.`id`<!-- 查詢位置(條件) students表的graduate_school的值 變成 graduate_school表的id值 -->
+        </li>
+
+    
+    <!-- 完整顯示 -->
+    <li>SELECT `students`.`id`,
+               `students`.`name`,
+               `graduate_school`.`name` as '畢業國中',
+               `status`.`status` as '畢業狀態' 
+        FROM `students`,`graduate_school`,`status` 
+        WHERE `students`.`graduate_at`=`graduate_school`.`id`
+               && `students`.`status_code`=`status`.`code`</li>
+</ul>
+
+
+
+<!-- ----------------------------------------------------------INNER JOIN-內部結合查詢---------------------------------------------------------- -->
+<!-- ------------------------------------------------------------是否關聯式資料的差別------------------------------------------------------------ -->
+<ul>
+    <!-- 以下兩種寫法除了因資料表數不同之外 ,在進行"大量"提取資料時 ,後者的的效能運用較佳 -->
+
+    <!-- 單個資料表提取資料 -->
+    <li>
+        SELECT `major`,
+        GROUP_CONCAT(`name`) as '學生們' 
+        FROM `students` 
+        WHERE LEFT(`seat_num`,3)='101'
+        GROUP BY `major`
+    </li>
+
+    <!-- 關聯式資料表提取資料 -->
+    <li>SELECT `dept`.`name` as '科系',
+        GROUP_CONCAT(`students`.`name`) as '學生'
+        FROM `students`,`dept`,`class_student`
+        WHERE `students`.`dept`=`dept`.`id` &&
+              `students`.`school_num`=`class_student`.`school_num` &&
+              `class_student`.`class_code`=101
+        GROUP BY `dept`.`name`
+    </li>
+</ul>
+
+
+
+
+<!-- ------------------------------------------------------------聯表查詢 OUT JOIN-外部結合查詢------------------------------------------------------------ -->
+<ul>
+    <!-- 顯示個別科系的人數 -->
+    <li>SELECT `dept`.`name`,COUNT(*) as '人數' FROM `dept`,`students` WHERE `students`.`dept`=`dept`.`id` GROUP BY `students`.`dept`</li>
+    <!-- 在dept資料表新增兩個科系後用上面這個程式碼搜尋,無法顯示新增的兩個科系  因為其中一張表沒有這兩個科系 所以不顯示 這便是INNER JOIN的 兩張表要有共有的資料才會顯示的問題 -->
+
+    <!-- LEFT JOIN / RIGHT JOIN 功能大致相似 -->
+    <!-- 若用OUT JOIN外部結合查詢時     在LEFT/RIGHT 後加 ON 取代WHERE進行定位功能 -->
+    <!-- 可能因為可讀性  大多數人較偏好使用LEFT JOIN -->
+
+    <li><!-- 顯示個別科系的人數  使用OUT JOIN-外部結合查詢 使兩張內容不同的表 也可以顯示出非共有資料 -->
+        <!-- FROM `dept`(科系8種) 去對照 LEFT JOIN `students` (科系6種)    所以會多顯示出2種students所沒有的資料 -->
+        <!-- 較口語化的說法 : FROM 拿`dept`對比較LEFT JOIN 的`students` 內容來自(ON): `students`的`dept`  被  `dept`的`id 覆蓋(比較) -->
+        SELECT `dept`.`name`,
+        COUNT(`students`.`id`) as '人數' 
+        FROM `dept`
+        LEFT JOIN `students` 
+        ON `students`.`dept`=`dept`.`id` 
+        GROUP BY `dept`.`name`
+    </li>
+
+    <li><!-- 直接把LEFT JOIN 改成 RIGHT JOIN會使dept新增的兩個科系無法顯示 -->
+        <!-- 變成RIGHT JOIN 用`students`資料表(科系6種)去找FROM `dept`資料表(科系8種)的東西 ,因為students只有6種所以只能對照出6種  剩下兩種無法對照  便不顯示 -->
+        SELECT `dept`.`name`,
+        COUNT(`students`.`id`) as '人數' 
+        FROM `dept`
+        RIGHT JOIN `students` 
+        ON `students`.`dept`=`dept`.`id` 
+        GROUP BY `dept`.`name`</li>
+    <li></li>
+    <li></li>
+</ul>
+
+
+
+
+<!--  -->
+<ul>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+</ul>
+</body>
+</html>
