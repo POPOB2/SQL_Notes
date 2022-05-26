@@ -77,6 +77,8 @@
 
 
 
+
+
 <!-- ----------------------------------------------------------INNER JOIN-內部結合查詢---------------------------------------------------------- -->
 <!-- ------------------------------------------------------------關聯式資料 理解流程------------------------------------------------------------ -->
 <ul>
@@ -122,6 +124,8 @@
 
 
 
+
+
 <!-- ----------------------------------------------------------INNER JOIN-內部結合查詢---------------------------------------------------------- -->
 <!-- ------------------------------------------------------------是否關聯式資料的差別------------------------------------------------------------ -->
 <ul>
@@ -150,6 +154,7 @@
 
 
 
+
 <!-- ------------------------------------------------------------聯表查詢 OUT JOIN-外部結合查詢------------------------------------------------------------ -->
 <ul>
     <!-- 顯示個別科系的人數 -->
@@ -158,7 +163,7 @@
 
     <!-- LEFT JOIN / RIGHT JOIN 功能大致相似 -->
     <!-- 若用OUT JOIN外部結合查詢時     在LEFT/RIGHT 後加 ON 取代WHERE進行定位功能 -->
-    <!-- 可能因為可讀性  大多數人較偏好使用LEFT JOIN -->
+    <!-- 因為可讀性  大多數人較偏好使用LEFT JOIN 尤其在串越多張表 語法越複雜 可讀性效果越明顯 -->
 
     <li><!-- 顯示個別科系的人數  使用OUT JOIN-外部結合查詢 使兩張內容不同的表 也可以顯示出非共有資料 -->
         <!-- FROM `dept`(科系8種) 去對照 LEFT JOIN `students` (科系6種)    所以會多顯示出2種students所沒有的資料 -->
@@ -179,20 +184,61 @@
         RIGHT JOIN `students` 
         ON `students`.`dept`=`dept`.`id` 
         GROUP BY `dept`.`name`</li>
-    <li></li>
-    <li></li>
 </ul>
 
 
 
 
-<!--  -->
+
+<!-- ------------------------------------------------------將INNER JOIN用OUT JOIN的另一種寫法 產生相同的結果------------------------------------------------------ -->
 <ul>
-    <li></li>
-    <li></li>
-    <li></li>
-    <li></li>
-    <li></li>
+    <!-- 使用上面的範例 這是INNER JOIN的語法 -->
+    <li>
+        SELECT `students`.`id`,
+               `students`.`name`,
+               `students`.`birthday`,
+               `students`.`uni_id`,
+               `dept`.`name` as '科系',
+               `graduate_school`.`name` as '畢業國中',
+               `status`.`status` as '畢業狀態' 
+        FROM `students`,`graduate_school`,`status`,`dept`
+        WHERE `students`.`graduate_at`=`graduate_school`.`id` &&
+              `students`.`status_code`=`status`.`code` &&
+              `students`.`dept`=`dept`.`id`
+    <!-- 查詢191~197行的欄位 ,資料來自198行的三張表 ,條件為199~201三個表格 -->
+    </li>
+
+    <!-- 換成OUTJOIN的LEFT JOIN 可讀性較高 這是單筆合併 -->
+    <li>SELECT `students`.`id`,
+               `students`.`name`,
+               `students`.`birthday`,
+               `students`.`uni_id`,
+               `graduate_school`.`name` as '畢業國中'
+
+        FROM `students`
+        LEFT JOIN `graduate_school`
+        ON `students`.`graduate_at`=`graduate_school`.`id`
+    </li>
+
+    <!-- 換成OUTJOIN的LEFT JOIN 可讀性較高 多筆合併時 每一段LEFT對應一個ON -->
+    <li>
+        SELECT `students`.`id`,
+               `students`.`name`,
+               `students`.`birthday`,
+               `students`.`uni_id`,
+               `dept`.`name` as '科系',
+               `graduate_school`.`name` as '畢業國中',
+               `status`.`status` as '畢業狀態' 
+        FROM   `students`
+        LEFT JOIN `graduate_school` 
+            ON `students`.`graduate_at`=`graduate_school`.`id`
+        LEFT JOIN `status` 
+            ON `students`.`status_code`=`status`.`code`
+        LEFT JOIN`dept` 
+            ON `students`.`dept`=`dept`.`id`
+    <!-- 查詢218~224行的欄位 ,主要資料來自225行的一張表 ,
+         226~231行,  LEFT JOIN每增加一張表 就針對這張表去寫(ON)執行條件 -->
+    </li>
 </ul>
 </body>
 </html>
