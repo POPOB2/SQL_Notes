@@ -37,7 +37,7 @@
 <body>
     <h1>PHP連線資料庫</h1>
 
-<!-- -------------------------------------------------------------------------------------------------------- -->
+<!-- -------------------------------------------------製作資料表呈現------------------------------------------------- -->
 <!-- |C| Create 建立 -->
 <!-- |R| Read   讀取 -->
 <!-- |U| Update 更新 -->
@@ -45,6 +45,7 @@
 
 <?php
 // 顯示全部479筆
+
 $dsn = "mysql:host=localhost;charset=utf8;dbname=school";
 $pdo = new PDO($dsn,'root','');
 $sql = "SELECT * FROM `students`";
@@ -61,6 +62,7 @@ $sql = "SELECT * FROM `students`";
                 <td>科系</td>
                 <td>父母</td>
                 <td>畢業國中</td>
+                <td>操作</td>
             </tr>
 <?php
         foreach($rows as $key => $rows){
@@ -71,6 +73,15 @@ $sql = "SELECT * FROM `students`";
                 echo "<td>{$rows['major']}</td>";
                 echo "<td>{$rows['parent']}</td>";
                 echo "<td>{$rows['secondary']}</td>";
+                // 想連到別的頁面,並知道是連到哪一筆資料 -> 需求:告訴 05_edit.php 我要去哪一筆資料 -> 關乎網頁傳值 需要帶一個值過去讓系統知道 我要去哪一筆資料
+                // 網頁傳值 : GET POST cookie session 選擇傳值類型的需求: 一次性:GET POST ,重複性:cookie session ,考慮到目前傳值到 05_edit.php 僅會在更新資料發生一次,不會應用在其他動作上  所以使用GET POST
+                // GET POST 選擇 參考 安全性 便利性(POST需要表單,GET除了表單 也可以改用網址傳值) ,考慮到GET資料內容放到網址上過多與安全性問題,可以用GET只傳遞關鍵資料 讓後台程式可以有資料接收後處理即可,用POST程式碼會多長  見.80行
+                echo "<td>";
+                echo "<button><a href='05_edit.php?id={$rows['id']}'>編輯1</a></button>";// 方案一. GET傳值到05_edit.php // .75行註解, 告訴a標籤 要到 05_edit.php 用?傳值 定位內容id=.69行的{$rows['id']} 
+                echo "<form action='05_edit.php' method='post'><input type='hidden' name='id' value='{$rows['id']}'><button>編輯2</button></form>";// 方案二. POST傳值 
+                // 須建立一個form表單 類型post ,當按下button時action到05_edit.php, 這裡使用input hidden隱藏欄位 name告知查詢欄位為id value查找的值為{$rows['id']}給出的id值
+
+                echo "</td>";
             echo "</tr>";
             }
         echo "</table>";
