@@ -81,6 +81,8 @@ $sql = "SELECT * FROM `students`";
                 echo "<form action='05_edit.php' method='post'><input type='hidden' name='id' value='{$rows['id']}'><button>編輯2</button></form>";// 方案二. POST傳值 
                 // 須建立一個form表單 類型post ,當按下button時action到05_edit.php, 這裡使用input hidden隱藏欄位 name告知查詢欄位為id value查找的值為{$rows['id']}給出的id值
 
+                echo "<button><a href='07_del.php?id={$rows['id']}'>刪除</a></button>";//新增刪除按鈕 按下刪除時會帶著row帶來的id 連結到07_del.php刪除頁面
+
                 echo "</td>";
             echo "</tr>";
             }
