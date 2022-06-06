@@ -19,6 +19,7 @@ $sql = "UPDATE `students` SET
       WHERE `id`='{$_POST['id']}' ";
 //把POST裡面的id 作為條件
 
-// echo $sql;
+echo $sql;
 $pdo->exec($sql);//節省伺服器傳資料的負擔 僅傳true / flase
+header("location:02_CRUD.php");//更新完不會停留在update頁面 導回首頁02_CRUD.php
 ?>
